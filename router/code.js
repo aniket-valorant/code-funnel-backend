@@ -28,7 +28,7 @@ router.get('/', auth, async (req, res) => {
 
 // read one 
 // read one by slug
-router.get('/:slug', auth, async (req, res) => {
+router.get('/:slug', async (req, res) => {
   try {
     const code = await Code.findOne({ slug: req.params.slug });
     if (!code) return res.status(404).json({ msg: 'Code not found' });

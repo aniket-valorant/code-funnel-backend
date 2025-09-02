@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Code = require('../models/Code');
 const auth = require('../middleware/auth');
-
+const cloudinary = require ("../config/cloudinary")
 
 // create
 router.post('/',auth, async (req, res) => {
@@ -53,12 +53,20 @@ router.put('/:id', auth, async (req, res) => {
 
 // Delete by slug
 router.delete('/:id', auth, async (req, res) => {
-  try {
-    const code = await Code.findOneAndDelete(req.params.id);
-    if (!code) return res.status(404).json({ msg: 'Code not found' });
-    res.json({ msg: 'Code deleted successfully' });
+ try {
+    const code = await Code.findById(req.params.id);
+    if (!code) return res.status(404).json({ message: "Code not found" });
+
+    // ✅ Delete image from Cloudinary
+    if (code.imagePublicId) {
+      await cloudinary.uploader.destroy(code.imagePublicId);
+    }
+
+    await code.deleteOne();
+
+    res.json({ message: "Code and image deleted successfully" });
   } catch (err) {
-    res.status(500).json({ msg: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 

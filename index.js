@@ -30,6 +30,7 @@ app.get("/api/keep-alive", (req, res) => {
 app.use('/api/auth', require('./router/auth.js'))
 app.use('/api/code', require('./router/code.js'))
 app.use('/api/contact', require('./router/contact.js'))
+app.use('/api/upload', require('./router/upload.js'))
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on ${PORT}`))

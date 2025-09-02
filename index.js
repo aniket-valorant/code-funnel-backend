@@ -22,8 +22,13 @@ mongoose.connect(process.env.MONGO_URI)
 app.get('/', (req, res) => {
     res.send("Welcome to Heppto Blogs!")
 })
+// server.js
+app.get("/api/keep-alive", (req, res) => {
+  res.send("Server is alive");
+});
+
 app.use('/api/auth', require('./router/auth.js'))
-app.use('/api/codes', require('./router/codes.js'))
+app.use('/api/code', require('./router/code.js'))
 app.use('/api/contact', require('./router/contact.js'))
 
 const PORT = process.env.PORT || 5000;

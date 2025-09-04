@@ -26,6 +26,9 @@ app.get('/', (req, res) => {
 app.get("/api/keep-alive", (req, res) => {
   res.send("Server is alive");
 });
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
 
 app.use('/api/auth', require('./router/auth.js'))
 app.use('/api/code', require('./router/code.js'))

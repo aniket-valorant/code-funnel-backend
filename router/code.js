@@ -3,6 +3,7 @@ const router = express.Router();
 const Code = require('../models/Code');
 const auth = require('../middleware/auth');
 const cloudinary = require ("../config/cloudinary")
+const { sendToTelegram } = require("../service/telegram")
 
 // create
 router.post('/',auth, async (req, res) => {
@@ -67,6 +68,26 @@ router.delete('/:id', auth, async (req, res) => {
     res.json({ message: "Code and image deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/:id/send', auth, async (req, res) => {
+  try {
+    const code = await Code.findById(req.params.id);
+    if (!code) return res.status(404).json({ msg: "Code not found" });
+
+    // build link (same as in your React copy)
+    const codeLink = `https://hepptoblogs.vercel.app/a/${code.slug}/p1`;
+    
+    await sendToTelegram({
+      imageUrl: code.imageUrl,
+      reelNo: code.slug,   // you can replace with a separate "reelNo" field if needed
+      codeLink,
+    });
+
+    res.json({success: true, msg: "✅ Sent to Telegram!" });
+  } catch (err) {
+    res.status(500).json({success: false, error: err.message });
   }
 });
 

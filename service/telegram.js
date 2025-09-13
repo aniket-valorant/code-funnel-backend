@@ -1,24 +1,38 @@
 // services/telegram.js
 const axios = require("axios");
+const FormData = require("form-data");
+const fs = require("fs");
+const https = require("https");
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
-async function sendToTelegram({ imageUrl, reelNo, codeLink }) {
+// ✅ Force IPv4 & add timeout
+const agent = new https.Agent({ family: 4 });
+
+async function sendToTelegram({ filePath, reelNo, codeLink }) {
   try {
     const caption = `🎥 Reel No:- ${reelNo}\n🔑 Code → ${codeLink}`;
 
+    const formData = new FormData();
+    formData.append("chat_id", TELEGRAM_CHAT_ID);
+    formData.append("caption", caption);
+    formData.append("video", fs.createReadStream(filePath)); // ✅ send local file
+
     await axios.post(
-      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`,
+      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendVideo`,
+      formData,
       {
-        chat_id: TELEGRAM_CHAT_ID,
-        photo: imageUrl,
-        caption,
+        headers: formData.getHeaders(),
+        httpsAgent: agent,  // force IPv4
+        timeout: 60000,     // 30 seconds
       }
     );
-    console.log("✅ Sent to Telegram:", reelNo);
+
+    console.log("✅ Sent video to Telegram:", reelNo);
   } catch (err) {
     console.error("❌ Telegram Error:", err.response?.data || err.message);
+    throw err;
   }
 }
 

@@ -12,10 +12,12 @@ const agent = new https.Agent({ family: 4 });
 
 async function sendToTelegram({ filePath, reelNo, codeLink }) {
   try {
-    const caption = `🎬 Video - ${reelNo}\n
-🔑 Code Link 👇
-👉 ${codeLink}\n
-⚡ How to get Code tutorial in 📌 Pin Message 🔔|`;
+const caption = `🎬 Video – ${reelNo}\n
+🔑 Code Link 👇\n
+👉 ${codeLink}\n\n
+📌 How to Get & Use the Code\n
+✅ Check the Pinned Message for full details`;
+
 
     const formData = new FormData();
     formData.append("chat_id", TELEGRAM_CHAT_ID);

@@ -12,7 +12,10 @@ const agent = new https.Agent({ family: 4 });
 
 async function sendToTelegram({ filePath, reelNo, codeLink }) {
   try {
-    const caption = `🎥 Reel No:- ${reelNo}\n🔑 Code → ${codeLink}`;
+    const caption = `🎬 Video - ${reelNo}\n
+🔑 Code Link 👇
+👉 ${codeLink}\n
+⚡ How to get Code tutorial in 📌 Pin Message 🔔|`;
 
     const formData = new FormData();
     formData.append("chat_id", TELEGRAM_CHAT_ID);
@@ -24,8 +27,8 @@ async function sendToTelegram({ filePath, reelNo, codeLink }) {
       formData,
       {
         headers: formData.getHeaders(),
-        httpsAgent: agent,  // force IPv4
-        timeout: 60000,     // 30 seconds
+        httpsAgent: agent, // force IPv4
+        timeout: 60000, // 30 seconds
       }
     );
 

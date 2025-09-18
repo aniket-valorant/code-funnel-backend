@@ -23,8 +23,30 @@ router.post("/", auth, async (req, res) => {
 // List codes
 router.get("/", auth, async (req, res) => {
   try {
-    const codes = await Code.find().sort({ createdAt: -1 });
-    res.json(codes);
+    let { page = 1, limit = 5, search = "" } = req.query;
+    page = parseInt(page);
+    limit = parseInt(limit);
+
+    const query = search
+      ? {
+          $or: [
+            { slug: { $regex: search, $options: "i" } },
+            { code: { $regex: search, $options: "i" } },
+          ],
+        }
+      : {};
+
+    const codes = await Code.find(query)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const total = await Code.countDocuments(query);
+
+    res.json({
+      codes,
+      hasMore: page * limit < total, // ✅ tell frontend if more data exists
+    });
   } catch (error) {
     res.status(500).json({ msg: error.message });
   }
